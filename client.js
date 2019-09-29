@@ -89,7 +89,7 @@ function WSClient(option)
         
         this.ws.onerror = function() {
             let str = JSON.stringify(arguments);
-            _this.error('错误：' + str);
+            _this.option.error('错误：' + str);
         };
         
         this.ws.onclose = function() {
