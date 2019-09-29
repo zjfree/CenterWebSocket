@@ -91,18 +91,16 @@ function receiveHandle(data)
 	showInfo('RECEIVE:<pre>' + JSON.stringify(data, null, '    ') + '</pre>', 'green');
 	if (data.uid == '_server')
 	{
-		if (data.cmd == 'get_user_list')
-		{
-			$('#tbUserList tbody').html('');
-			for (let k in data.data)
-			{
-				addUser(data.data[k]);
-			}
-		}
-		else if (data.cmd == 'register_success')
+		if (data.cmd == 'register_success')
 		{
 			wsClient.send('_server', 'sub_user', {uid:'_server'});
-			wsClient.send('_server', 'get_user_list');
+			wsClient.send('_server', 'get_user_list', null, function(res){
+				$('#tbUserList tbody').html('');
+				for (let k in res.data)
+				{
+					addUser(res.data[k]);
+				}
+			});
 		}
 		else if (data.cmd == 'user_login')
 		{

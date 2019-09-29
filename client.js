@@ -27,6 +27,8 @@ function WSClient(option)
     this.ws = null;
     this.isConnect = false;
     this.closeTimeout = null;
+    this.cmdIndex = 1;
+    this.callbackList = [];
 
     let _this = this;
 
@@ -74,7 +76,15 @@ function WSClient(option)
                 return;
             }
             
-            _this.option.receive(data);
+            if (_this.callbackList[data.cmdIndex])
+            {
+                _this.callbackList[data.cmdIndex](data);
+                _this.callbackList[data.cmdIndex] = null;
+            }
+            else
+            {
+                _this.option.receive(data);
+            }
         };
         
         this.ws.onerror = function() {
@@ -93,14 +103,22 @@ function WSClient(option)
     };
     
     // 发送消息
-    this.send = function(to, cmd, data)
+    this.send = function(to, cmd, data, callback)
     {
         data = data || null;
+        callback = callback || null;
+
         let arr = {
             to:to,
             cmd:cmd,
+            cmdIndex:this.cmdIndex++,
             data:data,
         };
+
+        if (callback)
+        {
+            this.callbackList[arr.cmdIndex] = callback;
+        }
 
         this.option.showInfo('SEND: ' + to + ',' + cmd + ',' + JSON.stringify(data));
 

@@ -265,6 +265,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'now',
 			'data' => Sys::now(),
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 
@@ -315,6 +316,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'register_success',
 			'data' => $user,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 
 		Sys::serverSubSend('user_login', [
@@ -352,6 +354,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'get_user_list',
 			'data' => $user_list,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 
@@ -362,6 +365,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'get_user_count',
 			'data' => count(self::$user_list),
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -383,6 +387,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'set_config',
 			'data' => true,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -397,6 +402,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'get_config',
 			'data' => $val,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -411,6 +417,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'get_current_user',
 			'data' => $user,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -426,6 +433,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'get_user',
 			'data' => $user,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -445,6 +453,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'sub_user',
 			'data' => true,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -461,6 +470,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'sub_user_del',
 			'data' => true,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
@@ -481,6 +491,7 @@ class Sys
 			'uid'  => '_server',
 			'cmd'  => 'get_conn_list',
 			'data' => $conn_list,
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
 		]);
 	}
 	
