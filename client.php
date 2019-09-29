@@ -11,7 +11,7 @@ use Workerman\Worker;
 use Workerman\Connection\AsyncTcpConnection;
 use \Workerman\Lib\Timer;
 
-require_once __DIR__ . './Workerman/Autoloader.php';
+require_once './Workerman/Autoloader.php';
 
 class Client
 {
