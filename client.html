@@ -30,6 +30,7 @@
 		}
     </style>
 	<script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+	<script src="./client.js"></script>
 </head>
 <body>
 <h3 style="margin:10px 0;">webSocket</h3>
@@ -46,156 +47,93 @@
 
 <div style="float:left;">
 	<div>
-		<button onclick="send('_server', 'get_user_list', {type:prompt('用户类型:')});">用户列表</button>
-		<button onclick="send('_server', 'get_user_count', {type:prompt('用户类型:')});">用户数</button>
-		<button onclick="send('_server', 'get_conn_list');">所有连接</button>
-		<button onclick="send('_server', 'heart');">心跳</button>
-		<button onclick="send('_server', 'get_current_user');">当前用户</button>
-		<button onclick="send('_server', 'set_config', {a:'hello01'});">设置配置</button>
-		<button onclick="send('_server', 'get_config', {key:'a'});">获取配置</button>
-		<button onclick="send('_server', 'get_user', {uid:prompt('UID:')});">获取用户</button>
-		<button onclick="send('_server', 'sub_user', {uid:prompt('UID:')});">订阅</button>
-		<button onclick="send('_server', 'sub_user_del', {uid:prompt('UID:')});">取消订阅</button>
+		<button onclick="wsClient.send('_server', 'get_user_list', {type:prompt('用户类型:')});">用户列表</button>
+		<button onclick="wsClient.send('_server', 'get_user_count', {type:prompt('用户类型:')});">用户数</button>
+		<button onclick="wsClient.send('_server', 'get_conn_list');">所有连接</button>
+		<button onclick="wsClient.send('_server', 'heart');">心跳</button>
+		<button onclick="wsClient.send('_server', 'get_current_user');">当前用户</button>
+		<button onclick="wsClient.send('_server', 'set_config', {a:'hello01'});">设置配置</button>
+		<button onclick="wsClient.send('_server', 'get_config', {key:'a'});">获取配置</button>
+		<button onclick="wsClient.send('_server', 'get_user', {uid:prompt('UID:')});">获取用户</button>
+		<button onclick="wsClient.send('_server', 'sub_user', {uid:prompt('UID:')});">订阅</button>
+		<button onclick="wsClient.send('_server', 'sub_user_del', {uid:prompt('UID:')});">取消订阅</button>
 		&emsp;
 		<button onclick="$('#divInfo').html('');">清空</button>
 	</div>
 	<div style="margin:5px 0;">
 	<input id="txtTo" type="text" value="_server" />:<input id="txtMsg" type="text" value="get_user_list" />
-	<input type="button" value="发送" onclick="send($('#txtTo').val(), $('#txtMsg').val());" />
+	<input type="button" value="发送" onclick="wsClient.send($('#txtTo').val(), $('#txtMsg').val());" />
 	</div>
 	<div id="divInfo" style="font-size:12px;">
 	</div>
 </div>
 <script>
 
-var ws = null;
-var con = 'ws://127.0.0.1:9900';
-var isConnect = false;
-var uid = 'web_' + Math.random().toString(36).substr(2).toUpperCase();
-
-function connect()
-{
-    try
-    {
-	   ws = new WebSocket(con);
-       ws.connect = con;
-    }
-    catch(ex)
-    {
-		showError('连接失败：' + JSON.stringify(ex));
-        return;
-    }
-
-	closeTimeout = window.setTimeout(function(){
-		ws.close();
-	}, 3000);
-
-	ws.onopen = function() {
-        window.clearTimeout(closeTimeout);
-		isConnect = true;
-		showInfo('连接成功');
-		send('_server', 'register', {
-			uid:uid,
-		});
-		
-		// 心跳
-		window.setInterval(function(){
-			send('_server', 'heart');
-		}, 60000);
-	};
-	
-	ws.onmessage = function(e) {
-		let data = JSON.parse(e.data);
-		showInfo('RECEIVE:<pre>' + JSON.stringify(data, null, '    ') + '</pre>', 'green');
-
-		if (data.uid == '_server')
-		{
-			if (data.cmd == 'get_user_list')
-			{
-				$('#tbUserList tbody').html('');
-				for (let k in data.data)
-				{
-					let user = data.data[k];
-					let html = '<tr id="tr_' + user.uid + '" data-uid="' + user.uid + '">';
-					html += '<td>' + user.uid + '</td>';
-					html += '<td>' + user.type + '</td>';
-					html += '<td>' + user.name + '</td>';
-					html += '</tr>';
-					$('#tbUserList tbody').append(html);
-				}
-			}
-			else if (data.cmd == 'register_success')
-			{
-				send('_server', 'sub_user', {uid:'_server'});
-				send('_server', 'get_user_list');
-			}
-			else if (data.cmd == 'user_login')
-			{
-				let user = data.data;
-				let html = '<tr id="tr_' + user.uid + '" data-uid="' + user.uid + '">';
-				html += '<td>' + user.uid + '</td>';
-				html += '<td>' + user.type + '</td>';
-				html += '<td>' + user.name + '</td>';
-				html += '</tr>';
-				$('#tbUserList tbody').append(html);
-			}
-			else if (data.cmd == 'user_logout')
-			{
-				$('#tr_' + data.data).remove();
-			}
-		}
-	};
-	
-	ws.onerror = function() {
-		var str = JSON.stringify(arguments);
-		showError('错误：' + str);
-	};
-	
-	ws.onclose = function() {
-        window.clearTimeout(closeTimeout);
-		isConnect = false;
-		window.setTimeout(function(){
-			connect();
-		}, 1000);
-		showInfo('连接关闭');
-	};
-}
-
 function showInfo(str, color)
 {
-	if (color)
-	{
-		$('#divInfo').prepend('<div style="color:' + color + ';">' + str + '</div>');
-	}
-	else
-	{
-		$('#divInfo').prepend('<div>' + str + '</div>');
-	}
+	color = color || '#000';
+
+	$('#divInfo').prepend('<div style="color:' + color + ';">' + str + '</div>');
 }
-function showError(str)
+
+function addUser(user)
 {
-	$('#divInfo').prepend('<div style="color:red;">' + str + '</div>');
+	let html = '<tr id="tr_' + user.uid + '" data-uid="' + user.uid + '">';
+	html += '<td>' + user.uid + '</td>';
+	html += '<td>' + user.type + '</td>';
+	html += '<td>' + user.name + '</td>';
+	html += '</tr>';
+	$('#tbUserList tbody').append(html);
 }
 
-function send(to, cmd, data)
+function receiveHandle(data)
 {
-	let arr = {
-		to:to,
-		cmd:cmd,
-		data:data,
-	};
-
-	showInfo('SEND: ' + to + ',' + cmd + ',' + JSON.stringify(data), 'blue');
-
-	if (isConnect)
+	showInfo('RECEIVE:<pre>' + JSON.stringify(data, null, '    ') + '</pre>', 'green');
+	if (data.uid == '_server')
 	{
-		ws.send(JSON.stringify(arr));
+		if (data.cmd == 'get_user_list')
+		{
+			$('#tbUserList tbody').html('');
+			for (let k in data.data)
+			{
+				addUser(data.data[k]);
+			}
+		}
+		else if (data.cmd == 'register_success')
+		{
+			wsClient.send('_server', 'sub_user', {uid:'_server'});
+			wsClient.send('_server', 'get_user_list');
+		}
+		else if (data.cmd == 'user_login')
+		{
+			addUser(data.data);
+		}
+		else if (data.cmd == 'user_logout')
+		{
+			$('#tr_' + data.data).remove();
+		}
 	}
 }
 
+let wsClient = null;
 $(function(){
+	let uid = 'web_' + Math.random().toString(36).substr(2).toUpperCase();
 	$('h3').append(' <small>' + uid + '</small>')
-	connect();
+
+	wsClient = new WSClient({
+		uid: uid,
+		name:'webClient01',
+		type:'web',
+		server: 'ws://127.0.0.1:9900',
+		receive:receiveHandle,
+		error:function(err){
+			showInfo(err, 'red');
+		},
+		showInfo:function(str){
+			showInfo(str);
+		},
+	});
+
 });
 
 </script>
