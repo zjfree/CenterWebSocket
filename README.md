@@ -1,6 +1,11 @@
 # CenterWebSocket
 PHP WebSocket消息转发中心
 
+# 技术栈
+* PHP 7.2
+* Workerman 3.5
+* HTML5 WebSocket
+
 # 主要功能：
 * 任意用户间通讯 
 * 用户与服务器通讯  
@@ -15,7 +20,7 @@ PHP WebSocket消息转发中心
 * `time`	服务器时间
 
 # 服务器内置命令：	
-* `now 	查询当前时间
+* `now` 	查询当前时间
 * `get_user_list` 	获取用户列表（type 用户类型）
 * `get_user_count` 	获取用户数量（type 用户类型）
 * `heart` 	心跳
@@ -25,7 +30,7 @@ PHP WebSocket消息转发中心
 * `get_current_user` 	获取当前用户
 * `get_user` 	获取用户信息（uid 用户ID）
 * `sub_user`	订阅指定用户（uid：用户ID、_server、_type@类型名称）
-* `sub_user_del`	取消订阅指定用户
+* `sub_user_del`	取消订阅指定用户（uid：用户ID、_server、_type@类型名称）
 
 # 用户信息	
 * `uid	用户ID
