@@ -488,8 +488,6 @@ class Sys
 			];
 		}
 
-		$conn -> 
-		
 		Sys::send($conn, [
 			'uid'  => '_server',
 			'cmd'  => 'get_conn_list',
