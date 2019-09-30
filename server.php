@@ -484,8 +484,11 @@ class Sys
 				'ip'   => $client_conn->getRemoteIp(),
 				'port' => $client_conn->getRemotePort(),
 				'uid'  => @$client_conn -> uid ?: '',
+				'time' => @$client_conn -> connectTime ?: '',
 			];
 		}
+
+		$conn -> 
 		
 		Sys::send($conn, [
 			'uid'  => '_server',
@@ -540,6 +543,7 @@ $worker->onWorkerStop = function($worker)
 // 建立连接
 $worker->onConnect = function($conn)use($worker)
 {
+	$conn -> connectTime = date('Y-m-d H:i:s');
     Sys::addLog("connect: " . $conn->getRemoteIp() . ':' . $conn->getRemotePort());
 };
 
