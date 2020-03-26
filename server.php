@@ -48,7 +48,7 @@ class Sys
 	public static function receiveParse(&$conn, $str)
 	{
 		$receive = json_decode($str, true);
-		if (empty($receive))
+		if (empty($receive) || !is_array($receive))
 		{
 			Sys::addLog('ERROR:接收内容JSON解析失败！' . $str);
 			Sys::serverError($conn, 'JSON解析失败！');
