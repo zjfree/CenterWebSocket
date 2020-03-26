@@ -496,6 +496,21 @@ class Sys
 		]);
 	}
 	
+	// 获取当前用户
+	public static function cmd_get_sub_list($conn, $receive)
+	{
+		$user = self::$user_list[$conn->uid];
+
+		$uid_list = self::getSubUserList($conn->uid, $user['type']);
+
+		Sys::send($conn, [
+			'uid'  => '_server',
+			'cmd'  => 'get_sub_list',
+			'data' => implode(',', $uid_list),
+			'cmdIndex' => @$receive['cmdIndex'] ?: 0,
+		]);
+	}
+	
 }
 
 /*
