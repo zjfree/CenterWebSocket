@@ -173,12 +173,13 @@ class Sys
 	}
 
 	// 服务器返回错误
-	public static function serverError($conn, $str)
+	public static function serverError($conn, $str, $error_code = -1)
 	{
 		Sys::send($conn, [
 			'uid'  => '_server',
 			'cmd'  => 'server_error',
 			'data' => $str,
+			'error_code' => $error_code,
 		]);
 	}
 
@@ -290,8 +291,8 @@ class Sys
 
 		if (in_array($uid, array_keys(Sys::$user_list)) && $uid != (@$conn -> uid ?: ''))
 		{
-			Sys::serverError($conn, '注册失败！uid[' . $uid . ']已存在');
-			return;
+			Sys::$user_list[$uid]['conn'] -> close();
+			Sys::addLog("[$uid] reconnect");
 		}
 
 		$user = @Sys::$user_list[$uid] ?: [
